@@ -17,6 +17,7 @@ var ReactQiniu = React.createClass({
         token: React.PropTypes.string.isRequired,
         // called before upload to set callback to files
         onUpload: React.PropTypes.func,
+        resourceKey: React.PropTypes.func,
         size: React.PropTypes.number,
         style: React.PropTypes.object,
         supportClick: React.PropTypes.bool,
@@ -117,7 +118,12 @@ var ReactQiniu = React.createClass({
         if(this.props.uploadKey){
           key = this.props.uploadKey;
         }
-
+        if (this.props.resourceKey) {
+            key = this.props.resourceKey(file)
+            if (!key) {
+                key = file.preview.split('/').pop() + '.' + file.name.split('.').pop();
+            }
+        }
         var r = request
             .post(this.props.uploadUrl)
             .field('key', key)
