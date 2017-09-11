@@ -110,20 +110,21 @@ var ReactQiniu = React.createClass({
 
     upload: function(file) {
         if (!file || file.size === 0) return null;
-        var key = file.preview.split('/').pop() + '.' + file.name.split('.').pop();
+        var key = null;
+        if (this.props.resourceKey) {
+            key = this.props.resourceKey(file)
+        }
+        if (!key) {
+            key = file.preview.split('/').pop() + '.' + file.name.split('.').pop();
+        }
         if (this.props.prefix) {
             key = this.props.prefix  + key;
         }
 
         if(this.props.uploadKey){
-          key = this.props.uploadKey;
+            key = this.props.uploadKey;
         }
-        if (this.props.resourceKey) {
-            key = this.props.resourceKey(file)
-            if (!key) {
-                key = file.preview.split('/').pop() + '.' + file.name.split('.').pop();
-            }
-        }
+
         var r = request
             .post(this.props.uploadUrl)
             .field('key', key)
